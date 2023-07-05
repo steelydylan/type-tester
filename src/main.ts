@@ -1,40 +1,27 @@
 import { TypeTester } from "./type-test";
 
 const main = async () => {
-  const code = `const h1 = "title"
-  const fuga: string[] = ["fuga"]
-  const foo: { hoge: string } = { hoge: "hoge" }
+  const code = `
+  type Speed = "slow" | "medium" | "fast";
 
-  type Piyo = {
-    piyo: string[]
+function getSpeed(speed: Speed): number {
+  switch (speed) {
+    case "slow":
+      return 10;
+    case "medium":
+      return 50;
+    case "fast":
+      return 200;
   }
-
-  const piyo: Piyo = {
-    piyo: ["piyo"]
-  }
-  ;
+}
 
   `;
   const typeTest = new TypeTester({ code });
 
   typeTest.test("h1 should be string", async () => {
-    typeTest.expect("h1").toBeType("string");
-  });
-
-  typeTest.test("fuga should be string[]", async () => {
-    typeTest.expect("fuga").toBeType("string[]");
-  });
-
-  typeTest.test("piyo should be string[]", async () => {
-    typeTest.expect("piyo").toBeType("boolean");
-  });
-
-  typeTest.test("foo should be { hoge: string }", async () => {
-    typeTest.expect("foo").toBeType("{ hoge: string }");
-  });
-
-  typeTest.test("piyo should be { piyo: string[] }", async () => {
-    typeTest.expect("piyo").toBeType("{ piyo: string[] }");
+    typeTest
+      .expect("getSpeed")
+      .toBeType(`(speed: "slow" | "medium" | "fast") => number`);
   });
 
   const results = await typeTest.run();
