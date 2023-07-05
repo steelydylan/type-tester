@@ -55,8 +55,7 @@ export class TypeTester {
   }
 
   expect(variable: string) {
-    const vars = getVariableFromCode(this.code, variable);
-    return this.expects.expect(vars);
+    return this.expects.expect(this.code, variable);
   }
 
   clearTests() {

@@ -1,9 +1,19 @@
 import { TypeTester } from "./type-test";
 
 const main = async () => {
-  const code = `const h1: string = "title";
-  type Fuga = { name: string; } & { age: number; };
-  const fuga: Fuga = { name: "fuga", age: 20 };
+  const code = `const h1 = "title"
+  const fuga: string[] = ["fuga"]
+  const foo: { hoge: string } = { hoge: "hoge" }
+
+  type Piyo = {
+    piyo: string[]
+  }
+
+  const piyo: Piyo = {
+    piyo: ["piyo"]
+  }
+  ;
+
   `;
   const typeTest = new TypeTester({ code });
 
@@ -11,8 +21,20 @@ const main = async () => {
     typeTest.expect("h1").toBeType("string");
   });
 
-  typeTest.test("h1 should be number", async () => {
-    typeTest.expect("fuga.name").toBeType("{ name: string; age: number; }");
+  typeTest.test("fuga should be string[]", async () => {
+    typeTest.expect("fuga").toBeType("string[]");
+  });
+
+  typeTest.test("piyo should be string[]", async () => {
+    typeTest.expect("piyo").toBeType("boolean");
+  });
+
+  typeTest.test("foo should be { hoge: string }", async () => {
+    typeTest.expect("foo").toBeType("{ hoge: string }");
+  });
+
+  typeTest.test("piyo should be { piyo: string[] }", async () => {
+    typeTest.expect("piyo").toBeType("{ piyo: string[] }");
   });
 
   const results = await typeTest.run();
