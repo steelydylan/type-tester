@@ -1,5 +1,5 @@
 {
-  "name": "html-browser-tester",
+  "name": "type-tester",
   "main": "./lib/browser-test.js",
   "types": "./lib/browser-test.d.ts",
   "version": "0.0.18",
@@ -10,9 +10,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/steelydylan/html-browser-tester.git"
+    "url": "https://github.com/steelydylan/type-tester.git"
   },
-  "homepage": "https://github.com/steelydylan/html-browser-tester",
+  "homepage": "https://github.com/steelydylan/type-tester",
   "devDependencies": {
     "typescript": "5.0.4",
     "vite": "^3.2.3"
