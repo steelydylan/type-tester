@@ -50,10 +50,6 @@ expectType<${result}>(${variable});
       compilerHost
     );
     const diagnostics = program.emit().diagnostics.filter((e) => !!e.file);
-    const allDiagnostics = ts.getPreEmitDiagnostics(program);
-    // console.log(allDiagnostics);
-    //   .concat(emitResult.diagnostics);
-    console.log(diagnostics, finalCode);
     return diagnostics.length === 0;
   },
 });
