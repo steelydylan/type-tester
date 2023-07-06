@@ -68,7 +68,6 @@ export class TypeTester {
       "expect",
       "beforeEach",
       "afterEach",
-      "setBrowserSize",
       "spyOn",
       code
     );
