@@ -1,5 +1,5 @@
 {
-  "name": "type-tester",
+  "name": "browser-type-tester",
   "main": "./lib/browser-test.js",
   "types": "./lib/browser-test.d.ts",
   "version": "0.0.18",
