@@ -1,5 +1,7 @@
 # Browser Type Tester
 
+too heavy to use it in production, but it's good for testing types in browser
+
 ## Usage
 
 ```ts
