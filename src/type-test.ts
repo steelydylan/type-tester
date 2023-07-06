@@ -1,4 +1,3 @@
-import { getVariableFromCode } from "./compiler";
 import { Expect } from "./expect";
 import { Spy } from "./spy";
 
