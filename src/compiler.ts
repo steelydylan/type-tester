@@ -1,41 +1,49 @@
 import * as ts from "typescript";
+import { libFileMap } from "./expect/lib";
 
-export const getVariableFromCode = (code: string, variableName: string) => {
-  const sourceFile = ts.createSourceFile(
-    "test.ts",
-    code,
-    ts.ScriptTarget.ES2015,
-    true
-  );
-
-  const variable = sourceFile.statements.find((statement) => {
-    if (ts.isVariableStatement(statement)) {
-      return statement.declarationList.declarations.find((declaration) => {
-        if (ts.isIdentifier(declaration.name)) {
-          return declaration.name.escapedText === variableName;
-        }
-        return false;
-      });
-    }
-    return false;
-  });
-
-  return variable;
-};
-
-export const getVariableType = (variable: ts.Statement) => {
-  if (ts.isVariableStatement(variable)) {
-    const declaration = variable.declarationList.declarations[0];
-    if (ts.isIdentifier(declaration.name)) {
-      const type = declaration.type;
-      console.log(type);
-      if (type) {
-        if (ts.isTypeReferenceNode(type)) {
-          return type.typeName.getText();
-        }
-        return type.getText();
+export const hasTypeError = (code: string) => {
+  // check type error sourcefile
+  const options: ts.CompilerOptions = {
+    noEmitOnError: true,
+    noImplicitAny: true,
+    target: ts.ScriptTarget.Latest,
+    // moduleResolution: ts.ModuleResolutionKind.
+    module: ts.ModuleKind.CommonJS,
+    // strict: true,
+  };
+  const libFileName = "lib.es6.d.ts";
+  const sourceFileName = "test.ts";
+  const compilerHost: ts.CompilerHost = {
+    getSourceFile: (fileName: string) => {
+      if (fileName === sourceFileName) {
+        return ts.createSourceFile(fileName, code, options.target!);
       }
-    }
-  }
-  return "";
+      if (libFileMap[fileName]) {
+        return ts.createSourceFile(
+          fileName,
+          libFileMap[fileName],
+          options.target!
+        );
+      }
+      return undefined;
+    },
+    writeFile: () => {},
+    getCurrentDirectory: () => "",
+    getDirectories: () => [],
+    getCanonicalFileName: (fileName: string) => fileName,
+    useCaseSensitiveFileNames: () => false,
+    getNewLine: () => "\n",
+    fileExists: (fileName: string) =>
+      fileName === sourceFileName || !!libFileMap[fileName],
+    readFile: () => "",
+    getDefaultLibFileName: () => libFileName,
+    getEnvironmentVariable: () => "",
+  };
+  const program = ts.createProgram(
+    [libFileName, sourceFileName],
+    options,
+    compilerHost
+  );
+  const diagnostics = program.emit().diagnostics.filter((e) => !!e.file);
+  return diagnostics.length === 0;
 };
