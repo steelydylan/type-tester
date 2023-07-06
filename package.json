@@ -1,8 +1,8 @@
 {
   "name": "browser-type-tester",
-  "main": "./lib/browser-test.js",
-  "types": "./lib/browser-test.d.ts",
-  "version": "0.0.18",
+  "main": "./lib/type-test.js",
+  "types": "./lib/type-test.d.ts",
+  "version": "0.0.19",
   "scripts": {
     "dev": "vite",
     "preview": "vite preview",

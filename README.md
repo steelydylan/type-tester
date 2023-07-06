@@ -1,9 +1,9 @@
-# TypeTest
+# Browser Type Tester
 
 ## Usage
 
 ```ts
-import { TypeTester } from "./type-test";
+import { TypeTester } from "browser-type-tester";
 
 const code = `
   type Speed = "slow" | "medium" | "fast";
