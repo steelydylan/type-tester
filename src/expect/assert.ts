@@ -2,9 +2,10 @@ import { hasTypeError } from "../compiler";
 
 export const assert = (code: string, variable: string) => ({
   toBe: (result: unknown) => {
-    const finalCode = `let somevariable = null as unknown as ${variable}
-    function expectType<T>(value: T) {}
-    expectType<${result}>(somevariable);
+    const finalCode = `${code}
+let somevariable = null as unknown as ${variable}
+function expectType<T>(value: T) {}
+expectType<${result}>(somevariable);
     `;
     return hasTypeError(finalCode);
   },

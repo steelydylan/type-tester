@@ -4,7 +4,7 @@ const main = async () => {
   const code = `
   type Speed = "slow" | "medium" | "fast";
 
-  const speed: Speed[] = ["slow"];
+  const speeds: Speed[] = ["slow"];
 
 function getSpeed(speed: Speed): number {
   switch (speed) {
@@ -20,12 +20,18 @@ function getSpeed(speed: Speed): number {
   `;
   const typeTest = new TypeTester({ code });
 
-  typeTest.test("h1 should be string", async () => {
-    // typeTest
-    //   .expect("getSpeed")
-    //   .toBeType(`(speed: "slow" | "medium" | "fast") => number`);
+  typeTest.test("speed type should be ", async () => {
+    typeTest.expect("speeds").toBeType(`("slow" | "medium" | "fast")[]`);
+  });
 
-    typeTest.expect("speed").toBeType("Speed[]");
+  typeTest.test("speed type should be ", async () => {
+    typeTest
+      .expect("getSpeed")
+      .toBeType(`(speed: "slow" | "medium" | "fast") => number`);
+  });
+
+  typeTest.test("speed type should be valid", async () => {
+    typeTest.expect("Speed").toBe(`"slow" | "medium" | "fast"`);
   });
 
   const results = await typeTest.run();
