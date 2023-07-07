@@ -6,6 +6,7 @@ export const hasTypeError = (code: string) => {
   const options: ts.CompilerOptions = {
     noEmitOnError: true,
     noImplicitAny: true,
+    strict: true,
     target: ts.ScriptTarget.Latest,
     // moduleResolution: ts.ModuleResolutionKind.
     module: ts.ModuleKind.CommonJS,
