@@ -53,7 +53,7 @@ function getSpeed(speed: Speed): number {
       new Promise<string>((resolve, reject) => {
         resolve('foo')
       })
-    ])`
+    ] as const)`
       )
       .toBeType(`Promise<[number, 42, string]>`);
   });
