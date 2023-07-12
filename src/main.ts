@@ -17,14 +17,24 @@ function getSpeed(speed: Speed): number {
   }
 }
 
+  declare function promiseAll<T extends any[]>(values: readonly [...T]): Promise<{
+    [P in keyof T]: Awaited<T[P]>
+  }>
+
+  const promise1 = Promise.resolve(3);
+  const promise2 = 42;
+  const promise3 = new Promise<string>((resolve, reject) => {
+    setTimeout(resolve, 100, 'foo');
+  });
+
   `;
   const typeTest = new TypeTester({ code });
 
-  typeTest.test("speed type should be ", async () => {
+  typeTest.test("speed type should be valid", async () => {
     typeTest.expect("speeds").toBeType(`("slow" | "medium" | "fast")[]`);
   });
 
-  typeTest.test("speed type should be ", async () => {
+  typeTest.test("speed type should be valid", async () => {
     typeTest
       .expect("getSpeed")
       .toBeType(`(speed: "slow" | "medium" | "fast") => number`);
@@ -34,9 +44,38 @@ function getSpeed(speed: Speed): number {
     typeTest.expect("Speed").toBe(`"slow" | "medium" | "fast"`);
   });
 
-  const results = await typeTest.run();
+  typeTest.test("promiseAll should be valid", async () => {
+    typeTest
+      .expect(
+        `promiseAll([
+      Promise.resolve(3), 
+      42, 
+      new Promise<string>((resolve, reject) => {
+        resolve('foo')
+      })
+    ])`
+      )
+      .toBeType(`Promise<[number, 42, string]>`);
+  });
 
-  console.log(results);
+  const results = await typeTest.run();
+  // domに結果を表示する
+  let dom = document.getElementById("results") as HTMLDivElement;
+  if (!dom) {
+    dom = document.createElement("div");
+    dom.setAttribute("id", "results");
+    document.body.appendChild(dom);
+  }
+  results.forEach((result) => {
+    const div = document.createElement("div");
+    div.textContent = result.description;
+    if (result.result) {
+      div.style.color = "green";
+    } else {
+      div.style.color = "red";
+    }
+    dom.appendChild(div);
+  });
 };
 
 main();
