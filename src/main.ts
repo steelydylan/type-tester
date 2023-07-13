@@ -27,6 +27,9 @@ function getSpeed(speed: Speed): number {
     setTimeout(resolve, 100, 'foo');
   });
 
+  type Hoge = any;
+  type Fuga = string;
+
   `;
   const typeTest = new TypeTester({ code });
 
@@ -56,6 +59,14 @@ function getSpeed(speed: Speed): number {
     ] as const)`
       )
       .toBeType(`Promise<[number, 42, string]>`);
+  });
+
+  typeTest.test("Hoge is any", async () => {
+    typeTest.expect("Hoge").toBeAny();
+  });
+
+  typeTest.test("Fuga is not any", async () => {
+    typeTest.expect("Fuga").not.toBeAny();
   });
 
   const results = await typeTest.run();
