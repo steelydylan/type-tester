@@ -24,4 +24,12 @@ expectType<____IsAny<${variable}>>(true as const);
     `;
     return hasTypeError(finalCode);
   },
+  toBeTypeAny: () => {
+    const finalCode = `${code}
+declare function expectType<T>(value: T): void
+type ____IsAny<T> = 0 extends (1 & T) ? true : false;
+expectType<____IsAny<typeof ${variable}>>(true as const);
+    `;
+    return hasTypeError(finalCode);
+  },
 });
