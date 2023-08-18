@@ -2,6 +2,8 @@ import { TypeTester } from "./type-test";
 
 const main = async () => {
   const code = `
+  import React from "react";
+  import { render } from "react-dom";
   type Speed = "slow" | "medium" | "fast";
 
   const speeds: Speed[] = ["slow"];
@@ -34,7 +36,14 @@ function getSpeed(speed: Speed): number {
   const fuga: Fuga = "fuga";
 
   `;
-  const typeTest = new TypeTester({ code });
+  const typeTest = new TypeTester({
+    code,
+  });
+
+  await typeTest.setDependencies({
+    react: "18.2.0",
+    "react-dom": "18.2.0",
+  });
 
   typeTest.test("speed type should be valid", async () => {
     typeTest.expect("speeds").toBeType(`("slow" | "medium" | "fast")[]`);

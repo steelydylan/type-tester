@@ -10,8 +10,12 @@ type ReturnObject = TruthyAssertObject & {
 export class Expect {
   private expects: boolean[] = [];
 
-  expect(code: string, expected: string) {
-    const assertedObject = assert(code, expected);
+  expect(
+    code: string,
+    expected: string,
+    dependencies: Record<string, string> = {}
+  ) {
+    const assertedObject = assert(code, expected, dependencies);
     const returnObject = {
       not: {},
     } as ReturnObject;
