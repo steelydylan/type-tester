@@ -18,6 +18,7 @@ export const hasTypeError = (
     esModuleInterop: true,
     typeRoots: ["./node_modules/@types", "https://esm.sh/@types"],
     target: ts.ScriptTarget.Latest,
+    jsx: ts.JsxEmit.React,
     // moduleResolution: ts.ModuleResolutionKind.
     module: ts.ModuleKind.CommonJS,
     // strict: true,
