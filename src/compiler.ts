@@ -23,7 +23,7 @@ export const hasTypeError = (
     // strict: true,
   };
   const libFileName = "lib.es6.d.ts";
-  const sourceFileName = "test.ts";
+  const sourceFileName = "test.tsx";
   const compilerHost: ts.CompilerHost = {
     getSourceFile: (fileName: string) => {
       // console.log(fileName);
