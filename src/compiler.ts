@@ -7,7 +7,8 @@ const removeNodeModulePath = (module: string) => {
 
 export const hasTypeError = (
   code: string,
-  dependencies: Record<string, string> = {}
+  files: Record<string, string>,
+  dependencies: Record<string, string>
 ) => {
   // console.log(nodeModules);
   // check type error sourcefile
@@ -30,6 +31,9 @@ export const hasTypeError = (
       // console.log(fileName);
       if (fileName === sourceFileName) {
         return ts.createSourceFile(fileName, code, options.target!);
+      }
+      if (Object.keys(files).includes(fileName)) {
+        return ts.createSourceFile(fileName, files[fileName], options.target!);
       }
       if (libFileMap[fileName]) {
         return ts.createSourceFile(
@@ -56,6 +60,7 @@ export const hasTypeError = (
     fileExists: (fileName: string) => {
       return (
         fileName === sourceFileName ||
+        Object.keys(files).includes(fileName) ||
         !!libFileMap[fileName] ||
         !!dependencies[removeNodeModulePath(fileName)]
       );
@@ -65,7 +70,7 @@ export const hasTypeError = (
     getEnvironmentVariable: () => "",
   };
   const program = ts.createProgram(
-    [libFileName, sourceFileName],
+    [libFileName, sourceFileName, ...Object.keys(files)],
     options,
     compilerHost
   );

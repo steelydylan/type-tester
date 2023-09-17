@@ -3,6 +3,7 @@ import { Spy } from "./spy";
 
 type Option = {
   code: string;
+  files?: Record<string, string>;
 };
 
 type Result = {
@@ -89,15 +90,17 @@ async function setDependencies(
 }
 
 export class TypeTester {
-  private code!: string;
+  private code: string;
+  private files: Record<string, string>;
   private tests: Test[] = [];
   private dependencies: Record<string, string> = {};
   private expects = new Expect();
   private beforeEachCallbacks: (() => Promise<void>)[] = [];
   private afterEachCallbacks: (() => Promise<void>)[] = [];
 
-  constructor({ code = "" }: Option) {
-    this.code = code;
+  constructor({ code, files }: Option) {
+    this.code = code ?? "";
+    this.files = files ?? {};
   }
 
   async setDependencies(dependencies: Record<string, string>) {
@@ -142,7 +145,12 @@ export class TypeTester {
   }
 
   expect(variable: string) {
-    return this.expects.expect(this.code, variable, this.dependencies);
+    return this.expects.expect(
+      this.code,
+      this.files,
+      this.dependencies,
+      variable
+    );
   }
 
   clearTests() {

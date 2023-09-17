@@ -12,10 +12,11 @@ export class Expect {
 
   expect(
     code: string,
-    expected: string,
-    dependencies: Record<string, string> = {}
+    files: Record<string, string>,
+    dependencies: Record<string, string>,
+    expected: string
   ) {
-    const assertedObject = assert(code, expected, dependencies);
+    const assertedObject = assert(code, files, dependencies, expected);
     const returnObject = {
       not: {},
     } as ReturnObject;

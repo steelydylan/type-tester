@@ -1,9 +1,12 @@
 import React from "react";
 import { render } from "react-dom";
+import clsx from "clsx";
 import { TypeTester } from "./type-test";
 
 const defaultCode = `import React from "react";
 import { render } from "react-dom";
+import { foo } from "./sub";
+
 type Speed = "slow" | "medium" | "fast";
 
 const speeds: Speed[] = ["slow"];
@@ -37,8 +40,14 @@ const fuga: Fuga = "fuga";
 
 `;
 
-const load = async (code: string) => {
-  const typeTest = new TypeTester({ code });
+const defaultSub = `
+type Foo = string;
+
+export const foo: Foo = "foo";
+`;
+
+const load = async (code: string, files: Record<string, string>) => {
+  const typeTest = new TypeTester({ code, files });
 
   await typeTest.setDependencies({
     react: "18.2.0",
@@ -89,21 +98,31 @@ const load = async (code: string) => {
     typeTest.expect("fuga").not.toBeTypeAny();
   });
 
+  typeTest.test("foo is string", async () => {
+    typeTest.expect("foo").toBeType("string");
+  });
   return await typeTest.run();
 };
 
 const App = () => {
-  const [code, setCode] = React.useState(defaultCode);
+  const [script, setScript] = React.useState({
+    "main.tsx": defaultCode,
+    "sub.tsx": defaultSub,
+  });
+  const [tab, setTab] = React.useState<keyof typeof script>("main.tsx");
+
   const [loading, setLoading] = React.useState(false);
   const [results, setResults] = React.useState<
     { result: boolean; description: string }[]
   >([]);
   const runTest = async () => {
     setLoading(true);
-    load(code).then((results) => {
-      setResults(results);
-      setLoading(false);
-    });
+    load(script["main.tsx"], { "sub.tsx": script["sub.tsx"] }).then(
+      (results) => {
+        setResults(results);
+        setLoading(false);
+      }
+    );
   };
   React.useEffect(() => {
     runTest();
@@ -112,16 +131,37 @@ const App = () => {
     runTest();
   };
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCode(e.target.value);
+    setScript((script) => ({ ...script, [tab]: e.target.value }));
   };
   return (
     <div className="flex gap-5 p-5 h-full">
-      <div className="flex-1">
+      <div className="flex-1 h-full">
+        <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+          <ul className="flex flex-wrap -mb-px">
+            {(["main.tsx", "sub.tsx"] as const).map((item) => (
+              <li key={item} className="mr-2">
+                <button
+                  onClick={() => setTab(item)}
+                  className={clsx({
+                    "inline-block p-4 border-b-2 rounded-t-lg": true,
+                    "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300":
+                      tab !== item,
+                    "text-blue-600 border-blue-600 active dark:text-blue-500 dark:border-blue-500":
+                      tab === item,
+                  })}
+                >
+                  {item}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
         <textarea
+          key={tab}
           className="bg-gray-50 h-full p-2 w-full"
           onChange={handleChange}
-          defaultValue={code}
-        />
+          defaultValue={script[tab]}
+        ></textarea>
       </div>
       <div className="flex-1">
         <p className="h-14 text-center font-bold text-lg">テスト結果</p>
