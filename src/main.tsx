@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "react-dom";
 import clsx from "clsx";
-import { TypeTester } from "./type-test";
+import { TypeTester } from "./lib";
 
 const defaultCode = `import React from "react";
 import { render } from "react-dom";
