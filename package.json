@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "preview": "vite preview",
-    "build:lib": "tsc"
+    "build:lib": "tsc",
+    "build": "vite build --outDir docs",
+    "test": "vitest"
   },
   "repository": {
     "type": "git",
