@@ -27,5 +27,8 @@
     "vite": "^4.4.9",
     "vitest": "^0.34.1"
   },
-  "packageManager": "yarn@3.6.1"
+  "packageManager": "yarn@3.6.1",
+  "dependencies": {
+    "browser-type-resolver": "^0.0.3"
+  }
 }

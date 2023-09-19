@@ -6,8 +6,7 @@ import { TypeTester } from "./lib";
 const defaultCode = `import React from "react";
 import { render } from "react-dom";
 import { foo } from "./sub";
-
-type Speed = "slow" | "medium" | "fast";
+import type { Speed } from "./sub";
 
 const speeds: Speed[] = ["slow"];
 
@@ -43,6 +42,7 @@ const fuga: Fuga = "fuga";
 const defaultSub = `
 type Foo = string;
 
+export type Speed = "slow" | "medium" | "fast";
 export const foo: Foo = "foo";
 `;
 

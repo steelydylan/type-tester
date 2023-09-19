@@ -1,3 +1,4 @@
+import { resolveModuleType } from "browser-type-resolver";
 import { Expect } from "./expect";
 import { Spy } from "./spy";
 
@@ -16,78 +17,6 @@ type Test = {
   description: string;
   callback: () => Promise<void>;
 };
-
-async function fetchFile(url: string): Promise<string> {
-  const response = await fetch(url);
-  return await response.text();
-}
-
-function simplifyImport(input: string): string {
-  const regex =
-    /import\s+([\s\S]*?)\s+from\s+'https:\/\/esm\.sh\/v\d+\/(.*?)@\d.*?'/g;
-  return input.replace(regex, (url, importPart, libraryName) => {
-    const parts = url.split("/");
-    const filename = parts[parts.length - 1].replace("';", "");
-    if (filename.includes("index.d.ts")) {
-      return `import ${importPart} from '${libraryName.replace(
-        /@types\//,
-        ""
-      )}'`;
-    }
-    return `import ${importPart} from '${libraryName.replace(
-      /@types\//,
-      ""
-    )}/${filename.replace(".d.ts", "")}`;
-  });
-}
-
-async function setDependencies(
-  library: string,
-  baseUrl = "https://esm.sh/",
-  versions = "v131"
-) {
-  async function processFile(
-    path: string,
-    definitions: { [key: string]: string } = {}
-  ): Promise<{ [key: string]: string }> {
-    const content = await fetchFile(path);
-    const moduleName = path
-      .split("/")
-      .slice(-2)
-      .join("/")
-      // version表記を削除
-      .replace(/@\d+\.\d+\.\d+/g, "");
-    definitions[moduleName] = simplifyImport(content);
-
-    // Import statements
-    const importUrls = (
-      content.match(
-        /import [\s\S]*? from 'https:\/\/esm\.sh\/v\d+\/[^']+';/g
-      ) || []
-    ).map((line) => line.match(/https:\/\/esm\.sh\/[^']+/)?.[0]);
-
-    // Reference paths
-    const referencePaths = (
-      content.match(/\/\/\/ <reference path="[^"]+" \/>/g) || []
-    ).map((line) => line.match(/"[^"]+"/)?.[0]?.replace(/"/g, ""));
-
-    for (const url of importUrls || []) {
-      await processFile(url ?? "", definitions);
-    }
-
-    for (const refPath of referencePaths || []) {
-      const refUrl = new URL(refPath ?? "", path); // Assuming relative path
-      await processFile(refUrl.toString(), definitions);
-    }
-
-    return definitions;
-  }
-
-  const mainPath = `${baseUrl}@types/${library}@${versions}/index.d.ts`;
-  const definitions = await processFile(mainPath);
-
-  return definitions;
-}
 
 export class TypeTester {
   private code: string;
@@ -111,7 +40,7 @@ export class TypeTester {
   }
 
   async addDependency(name: string, version: string) {
-    const definitions = await setDependencies(name, "https://esm.sh/", version);
+    const definitions = await resolveModuleType(name, version);
     this.dependencies = {
       ...this.dependencies,
       ...definitions,
