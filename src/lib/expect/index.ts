@@ -1,5 +1,7 @@
 import { assert } from "./assert";
 
+import type { CompilerOptions } from "typescript";
+
 type AssertKey = keyof ReturnType<typeof assert>;
 type TruthyAssertObject = { [T in AssertKey]: (...value: unknown[]) => void };
 
@@ -10,13 +12,26 @@ type ReturnObject = TruthyAssertObject & {
 export class Expect {
   private expects: boolean[] = [];
 
-  expect(
-    code: string,
-    files: Record<string, string>,
-    dependencies: Record<string, string>,
-    expected: string
-  ) {
-    const assertedObject = assert(code, files, dependencies, expected);
+  expect({
+    code,
+    files,
+    dependencies,
+    compilerOptions,
+    expected,
+  }: {
+    code: string;
+    files: Record<string, string>;
+    dependencies: Record<string, string>;
+    compilerOptions: CompilerOptions;
+    expected: string;
+  }) {
+    const assertedObject = assert({
+      code,
+      files,
+      dependencies,
+      compilerOptions,
+      variable: expected,
+    });
     const returnObject = {
       not: {},
     } as ReturnObject;

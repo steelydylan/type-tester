@@ -1,10 +1,12 @@
 import { resolveAllModuleType, resolveModuleType } from "browser-type-resolver";
 import { Expect } from "./expect";
 import { Spy } from "./spy";
+import type { CompilerOptions } from "typescript";
 
 type Option = {
   code: string;
   files?: Record<string, string>;
+  compilerOptions?: CompilerOptions;
 };
 
 type Result = {
@@ -26,10 +28,12 @@ export class TypeTester {
   private expects = new Expect();
   private beforeEachCallbacks: (() => Promise<void>)[] = [];
   private afterEachCallbacks: (() => Promise<void>)[] = [];
+  private compilerOptions: CompilerOptions = {};
 
-  constructor({ code, files }: Option) {
+  constructor({ code, files, compilerOptions }: Option) {
     this.code = code ?? "";
     this.files = files ?? {};
+    this.compilerOptions = compilerOptions ?? {};
   }
 
   async setDependencies(dependencies: Record<string, string>) {
@@ -71,12 +75,13 @@ export class TypeTester {
   }
 
   expect(variable: string) {
-    return this.expects.expect(
-      this.code,
-      this.files,
-      this.dependencies,
-      variable
-    );
+    return this.expects.expect({
+      code: this.code,
+      files: this.files,
+      dependencies: this.dependencies,
+      expected: variable,
+      compilerOptions: this.compilerOptions,
+    });
   }
 
   clearTests() {

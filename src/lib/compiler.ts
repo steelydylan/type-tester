@@ -5,11 +5,17 @@ const removeNodeModulePath = (module: string) => {
   return module.replace(/node_modules\//, "");
 };
 
-export const hasTypeError = (
-  code: string,
-  files: Record<string, string>,
-  dependencies: Record<string, string>
-) => {
+export const hasTypeError = ({
+  code,
+  files,
+  dependencies,
+  compilerOptions,
+}: {
+  code: string;
+  files: Record<string, string>;
+  dependencies: Record<string, string>;
+  compilerOptions: ts.CompilerOptions;
+}) => {
   // console.log(nodeModules);
   // check type error sourcefile
   const options: ts.CompilerOptions = {
@@ -23,6 +29,7 @@ export const hasTypeError = (
     // moduleResolution: ts.ModuleResolutionKind.
     module: ts.ModuleKind.CommonJS,
     // strict: true,
+    ...compilerOptions,
   };
   const libFileName = "lib.es6.d.ts";
   const sourceFileName = "test.tsx";
