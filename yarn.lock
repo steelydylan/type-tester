@@ -831,12 +831,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browser-type-resolver@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "browser-type-resolver@npm:0.0.3"
+"browser-type-resolver@npm:0.0.5":
+  version: 0.0.5
+  resolution: "browser-type-resolver@npm:0.0.5"
   dependencies:
     localforage: ^1.10.0
-  checksum: c7720c71665012e7e62526ebab11616ea44954ab72a615a458994d4d425146b1fa2715fa0b816c2e120c546edc5be68cf9e16ed636b8e3a1e24d9e8721ed50a2
+  checksum: cebceafb402762a0ffbdbcc1d090c027bc19731ccb9d7831d04baf0b2b453774c63a54fc7813f54dc73aa9974c18e602b237273691a54f8a876e83abcbd69b23
   languageName: node
   linkType: hard
 
@@ -848,7 +848,7 @@ __metadata:
     "@types/react-dom": ^18.2.7
     "@vitejs/plugin-react": ^4.0.4
     "@vitest/coverage-v8": ^0.34.1
-    browser-type-resolver: ^0.0.3
+    browser-type-resolver: 0.0.5
     clsx: ^2.0.0
     react: ^18.2.0
     react-dom: ^18.2.0

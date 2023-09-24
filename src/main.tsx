@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { TypeTester } from "./lib";
 
 const defaultCode = `import React from "react";
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { foo } from "./sub";
 import type { Speed } from "./sub";
 
@@ -37,6 +37,10 @@ type Fuga = string;
 const hoge: Hoge = "hoge";
 const fuga: Fuga = "fuga";
 
+function Hoge ({ onChange } : { onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+  return <input onChange={onChange} />
+}
+
 `;
 
 const defaultSub = `
@@ -44,6 +48,7 @@ type Foo = string;
 
 export type Speed = "slow" | "medium" | "fast";
 export const foo: Foo = "foo";
+
 `;
 
 const load = async (code: string, files: Record<string, string>) => {
@@ -100,6 +105,14 @@ const load = async (code: string, files: Record<string, string>) => {
 
   typeTest.test("foo is string", async () => {
     typeTest.expect("foo").toBeType("string");
+  });
+
+  typeTest.test("Hoge is valid Component", async () => {
+    typeTest
+      .expect("Hoge")
+      .toBeType(
+        "({ onChange }: { onChange: React.ChangeEventHandler<HTMLInputElement>; }) => JSX.Element"
+      );
   });
   return await typeTest.run();
 };

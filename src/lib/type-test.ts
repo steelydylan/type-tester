@@ -1,4 +1,4 @@
-import { resolveModuleType } from "browser-type-resolver";
+import { resolveAllModuleType, resolveModuleType } from "browser-type-resolver";
 import { Expect } from "./expect";
 import { Spy } from "./spy";
 
@@ -33,10 +33,7 @@ export class TypeTester {
   }
 
   async setDependencies(dependencies: Record<string, string>) {
-    const keys = Object.keys(dependencies);
-    for (const key of keys) {
-      await this.addDependency(key, dependencies[key]);
-    }
+    this.dependencies = await resolveAllModuleType(dependencies);
   }
 
   async addDependency(name: string, version: string) {
