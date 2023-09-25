@@ -54,10 +54,16 @@ export const foo: Foo = "foo";
 const load = async (code: string, files: Record<string, string>) => {
   const typeTest = new TypeTester({ code, files });
 
-  await typeTest.setDependencies({
-    react: "18.2.0",
-    "react-dom": "18.2.0",
-  });
+  await typeTest.setDependencies(
+    {
+      "react-dom": "18.2.0",
+      react: "18.2.0",
+    },
+    {
+      cache: false,
+    }
+  );
+  console.log(typeTest);
 
   typeTest.test("speed type should be valid", async () => {
     typeTest.expect("speeds").toBeType(`("slow" | "medium" | "fast")[]`);
