@@ -2,7 +2,7 @@
   "name": "browser-type-tester",
   "main": "./dist/type-test.js",
   "types": "./dist/type-test.d.ts",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "scripts": {
     "dev": "vite",
     "preview": "vite preview",
@@ -29,6 +29,6 @@
   },
   "packageManager": "yarn@3.6.1",
   "dependencies": {
-    "browser-type-resolver": "0.0.6"
+    "browser-type-resolver": "0.0.8"
   }
 }

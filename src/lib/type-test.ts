@@ -36,12 +36,19 @@ export class TypeTester {
     this.compilerOptions = compilerOptions ?? {};
   }
 
-  async setDependencies(dependencies: Record<string, string>) {
-    this.dependencies = await resolveAllModuleType(dependencies);
+  async setDependencies(
+    dependencies: Record<string, string>,
+    options = { cache: true }
+  ) {
+    this.dependencies = await resolveAllModuleType(dependencies, options);
   }
 
-  async addDependency(name: string, version: string) {
-    const definitions = await resolveModuleType(name, version);
+  async addDependency(
+    name: string,
+    version: string,
+    options = { cache: true }
+  ) {
+    const definitions = await resolveModuleType(name, version, options);
     this.dependencies = {
       ...this.dependencies,
       ...definitions,
