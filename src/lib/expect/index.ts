@@ -1,6 +1,7 @@
+import { Host } from "../type";
 import { assert } from "./assert";
 
-import type { CompilerOptions } from "typescript";
+import type { CompilerOptions, Program } from "typescript";
 
 type AssertKey = keyof ReturnType<typeof assert>;
 type TruthyAssertObject = { [T in AssertKey]: (...value: unknown[]) => void };
@@ -10,26 +11,22 @@ type ReturnObject = TruthyAssertObject & {
 };
 
 export class Expect {
-  private expects: boolean[] = [];
-
+  private expects: { passed: boolean; messages: string[] }[] = [];
   expect({
     code,
-    files,
-    dependencies,
-    compilerOptions,
+    program,
+    host,
     expected,
   }: {
     code: string;
-    files: Record<string, string>;
-    dependencies: Record<string, string>;
-    compilerOptions: CompilerOptions;
+    program: Program;
+    host: Host;
     expected: string;
   }) {
     const assertedObject = assert({
       code,
-      files,
-      dependencies,
-      compilerOptions,
+      program,
+      host,
       variable: expected,
     });
     const returnObject = {
@@ -38,13 +35,15 @@ export class Expect {
     (Object.keys(assertedObject) as AssertKey[]).forEach((key) => {
       returnObject[key] = (...result: unknown[]) => {
         // @ts-ignore
-        this.expects.push(assertedObject[key](...result));
+        const [passed, messages] = assertedObject[key](...result);
+        this.expects.push({ passed, messages });
       };
     });
     (Object.keys(assertedObject) as AssertKey[]).forEach((key) => {
       returnObject.not[key] = (...result: unknown[]) => {
         // @ts-ignore
-        this.expects.push(!assertedObject[key](...result));
+        const [passed, messages] = assertedObject[key](...result);
+        this.expects.push({ passed: !passed, messages });
       };
     });
     return returnObject;
@@ -55,6 +54,10 @@ export class Expect {
   }
 
   isAllPassed() {
-    return this.expects.every((e) => e);
+    return this.expects.every((e) => e.passed);
+  }
+
+  getMessages() {
+    return this.expects.map((e) => e.messages).flat();
   }
 }

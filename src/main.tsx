@@ -54,16 +54,10 @@ export const foo: Foo = "foo";
 const load = async (code: string, files: Record<string, string>) => {
   const typeTest = new TypeTester({ code, files });
 
-  await typeTest.setDependencies(
-    {
-      "react-dom": "18.2.0",
-      react: "18.2.0",
-    },
-    {
-      cache: false,
-    }
-  );
-  console.log(typeTest);
+  await typeTest.setDependencies({
+    "react-dom": "18.2.0",
+    react: "18.2.0",
+  });
 
   typeTest.test("speed type should be valid", async () => {
     typeTest.expect("speeds").toBeType(`("slow" | "medium" | "fast")[]`);
@@ -97,6 +91,14 @@ const load = async (code: string, files: Record<string, string>) => {
     typeTest.expect("Hoge").toBeAny();
   });
 
+  typeTest.test("Hoge is not any", async () => {
+    typeTest.expect("Hoge").not.toBeAny();
+  });
+
+  typeTest.test("Fuga is any", async () => {
+    typeTest.expect("Fuga").toBeAny();
+  });
+
   typeTest.test("Fuga is not any", async () => {
     typeTest.expect("Fuga").not.toBeAny();
   });
@@ -113,6 +115,14 @@ const load = async (code: string, files: Record<string, string>) => {
     typeTest.expect("foo").toBeType("string");
   });
 
+  typeTest.test("foo is number", async () => {
+    typeTest.expect("foo").toBeType("number");
+  });
+
+  typeTest.test("foo is not string", async () => {
+    typeTest.expect("foo").not.toBeType("string");
+  });
+
   typeTest.test("Hoge is valid Component", async () => {
     typeTest
       .expect("Hoge")
@@ -120,7 +130,10 @@ const load = async (code: string, files: Record<string, string>) => {
         "({ onChange }: { onChange: React.ChangeEventHandler<HTMLInputElement>; }) => JSX.Element"
       );
   });
-  return await typeTest.run();
+  console.time("run");
+  const result = await typeTest.run();
+  console.timeEnd("run");
+  return result;
 };
 
 const App = () => {
@@ -136,8 +149,9 @@ const App = () => {
   >([]);
   const runTest = async () => {
     setLoading(true);
-    load(script["main.tsx"], { "sub.tsx": script["sub.tsx"] }).then(
+    load(script["main.tsx"], { "/sub.tsx": script["sub.tsx"] }).then(
       (results) => {
+        console.log(results);
         setResults(results);
         setLoading(false);
       }

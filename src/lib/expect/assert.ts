@@ -1,18 +1,17 @@
-import type { CompilerOptions } from "typescript";
+import type { CompilerOptions, Program } from "typescript";
 import { hasTypeError } from "../compiler";
+import { Host } from "../type";
 
 export const assert = ({
   code,
-  files,
-  dependencies,
+  program,
+  host,
   variable,
-  compilerOptions,
 }: {
   code: string;
-  files: Record<string, string>;
-  dependencies: Record<string, string>;
+  program: Program;
+  host: Host;
   variable: string;
-  compilerOptions: CompilerOptions;
 }) => ({
   toBe: (result: unknown) => {
     const finalCode = `${code}
@@ -22,9 +21,8 @@ expectType<${result}>(somevariable);
     `;
     return hasTypeError({
       code: finalCode,
-      files,
-      dependencies,
-      compilerOptions,
+      host,
+      program,
     });
   },
   toBeType: (result: unknown) => {
@@ -34,9 +32,8 @@ expectType<${result}>(${variable});
     `;
     return hasTypeError({
       code: finalCode,
-      files,
-      dependencies,
-      compilerOptions,
+      host,
+      program,
     });
   },
   toBeAny: () => {
@@ -47,9 +44,8 @@ expectType<____IsAny<${variable}>>(true as const);
     `;
     return hasTypeError({
       code: finalCode,
-      files,
-      dependencies,
-      compilerOptions,
+      host,
+      program,
     });
   },
   toBeTypeAny: () => {
@@ -60,9 +56,8 @@ expectType<____IsAny<typeof ${variable}>>(true as const);
     `;
     return hasTypeError({
       code: finalCode,
-      files,
-      dependencies,
-      compilerOptions,
+      host,
+      program,
     });
   },
 });

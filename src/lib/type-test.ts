@@ -1,7 +1,12 @@
 import { resolveAllModuleType, resolveModuleType } from "browser-type-resolver";
+
 import { Expect } from "./expect";
 import { Spy } from "./spy";
+import * as tsvfs from "@typescript/vfs";
 import type { CompilerOptions } from "typescript";
+import * as ts from "typescript";
+import { getProgram } from "./compiler";
+import { Host } from "./type";
 
 type Option = {
   code: string;
@@ -12,7 +17,7 @@ type Option = {
 type Result = {
   description: string;
   result: boolean;
-  error?: unknown;
+  messages: string[];
 };
 
 type Test = {
@@ -29,11 +34,55 @@ export class TypeTester {
   private beforeEachCallbacks: (() => Promise<void>)[] = [];
   private afterEachCallbacks: (() => Promise<void>)[] = [];
   private compilerOptions: CompilerOptions = {};
+  private fsMap: Map<string, string> = new Map();
+  private program!: ts.Program;
+  private host!: Host;
 
-  constructor({ code, files, compilerOptions }: Option) {
+  constructor({ code, files, compilerOptions = {} }: Option) {
     this.code = code ?? "";
     this.files = files ?? {};
-    this.compilerOptions = compilerOptions ?? {};
+    const options: ts.CompilerOptions = {
+      lib: ["dom", "dom.iterable", "esnext"],
+      noEmitOnError: true,
+      noImplicitAny: true,
+      strict: true,
+      esModuleInterop: true,
+      typeRoots: ["./node_modules/@types"],
+      target: ts.ScriptTarget.Latest,
+      jsx: ts.JsxEmit.React,
+      // moduleResolution: ts.ModuleResolutionKind.
+      module: ts.ModuleKind.CommonJS,
+      // strict: true,
+      ...compilerOptions,
+    };
+    this.compilerOptions = options;
+  }
+
+  private async setFsMapFromCdn() {
+    const fsMap = await tsvfs.createDefaultMapFromCDN(
+      this.compilerOptions,
+      ts.version,
+      true,
+      ts
+      // lzstring
+    );
+    const keys = [...fsMap.keys()];
+    for (const key of keys) {
+      this.fsMap.set(key, fsMap.get(key) ?? "");
+    }
+  }
+
+  private async prepare() {
+    await this.setFsMapFromCdn();
+    Object.keys(this.files).forEach((key) => {
+      this.fsMap.set(key, this.files[key]);
+    });
+    const { host, program } = await getProgram({
+      compilerOptions: this.compilerOptions,
+      fsMap: this.fsMap,
+    });
+    this.program = program;
+    this.host = host;
   }
 
   async setDependencies(
@@ -41,6 +90,10 @@ export class TypeTester {
     options = { cache: true }
   ) {
     this.dependencies = await resolveAllModuleType(dependencies, options);
+    // object to map
+    Object.keys(this.dependencies).forEach((key) => {
+      this.fsMap.set("/node_modules/" + key, this.dependencies[key]);
+    });
   }
 
   async addDependency(
@@ -53,6 +106,9 @@ export class TypeTester {
       ...this.dependencies,
       ...definitions,
     };
+    Object.keys(definitions).forEach((key) => {
+      this.fsMap.set("/node_modules/" + key, definitions[key]);
+    });
   }
 
   spyOn<T extends string>(obj: Record<T, Function>, key: T) {
@@ -84,10 +140,9 @@ export class TypeTester {
   expect(variable: string) {
     return this.expects.expect({
       code: this.code,
-      files: this.files,
-      dependencies: this.dependencies,
+      program: this.program,
+      host: this.host,
       expected: variable,
-      compilerOptions: this.compilerOptions,
     });
   }
 
@@ -116,6 +171,7 @@ export class TypeTester {
   }
 
   async run() {
+    await this.prepare();
     const results = [] as Result[];
     for (const t of this.tests) {
       for (const b of this.beforeEachCallbacks) {
@@ -127,12 +183,13 @@ export class TypeTester {
         results.push({
           description,
           result: this.expects.isAllPassed(),
+          messages: this.expects.getMessages(),
         });
       } catch (e) {
         results.push({
           description,
           result: false,
-          error: e,
+          messages: [`${e}`],
         });
       }
       this.expects.clean();

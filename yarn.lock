@@ -596,6 +596,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript/vfs@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "@typescript/vfs@npm:1.5.0"
+  dependencies:
+    debug: ^4.1.1
+  checksum: 09916e2fc567fe993fd81a34a48f72183b4c84d73a6bfdd8d4ca60ecd28de80fbb509b050f30513913b86270dc2abc759cffb4c0fd1068f7dd53104a1b0b7e27
+  languageName: node
+  linkType: hard
+
 "@vitejs/plugin-react@npm:^4.0.4":
   version: 4.0.4
   resolution: "@vitejs/plugin-react@npm:4.0.4"
@@ -846,10 +855,12 @@ __metadata:
   dependencies:
     "@types/react": ^18.2.20
     "@types/react-dom": ^18.2.7
+    "@typescript/vfs": ^1.5.0
     "@vitejs/plugin-react": ^4.0.4
     "@vitest/coverage-v8": ^0.34.1
     browser-type-resolver: 0.0.10
     clsx: ^2.0.0
+    lz-string: ^1.5.0
     react: ^18.2.0
     react-dom: ^18.2.0
     typescript: ^5.1.6
@@ -1649,6 +1660,15 @@ __metadata:
   version: 10.0.1
   resolution: "lru-cache@npm:10.0.1"
   checksum: 06f8d0e1ceabd76bb6f644a26dbb0b4c471b79c7b514c13c6856113879b3bf369eb7b497dad4ff2b7e2636db202412394865b33c332100876d838ad1372f0181
+  languageName: node
+  linkType: hard
+
+"lz-string@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "lz-string@npm:1.5.0"
+  bin:
+    lz-string: bin/bin.js
+  checksum: 1ee98b4580246fd90dd54da6e346fb1caefcf05f677c686d9af237a157fdea3fd7c83a4bc58f858cd5b10a34d27afe0fdcbd0505a47e0590726a873dc8b8f65d
   languageName: node
   linkType: hard
 

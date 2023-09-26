@@ -29,6 +29,8 @@
   },
   "packageManager": "yarn@3.6.1",
   "dependencies": {
-    "browser-type-resolver": "0.0.10"
+    "@typescript/vfs": "^1.5.0",
+    "browser-type-resolver": "0.0.10",
+    "lz-string": "^1.5.0"
   }
 }
