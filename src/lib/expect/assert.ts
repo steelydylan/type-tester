@@ -1,4 +1,4 @@
-import type { CompilerOptions, Program } from "typescript";
+import type { Program } from "typescript";
 import { hasTypeError } from "../compiler";
 import { Host } from "../type";
 

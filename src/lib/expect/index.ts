@@ -1,7 +1,7 @@
 import { Host } from "../type";
 import { assert } from "./assert";
 
-import type { CompilerOptions, Program } from "typescript";
+import type { Program } from "typescript";
 
 type AssertKey = keyof ReturnType<typeof assert>;
 type TruthyAssertObject = { [T in AssertKey]: (...value: unknown[]) => void };
