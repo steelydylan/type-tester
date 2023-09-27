@@ -85,6 +85,12 @@ export class TypeTester {
     this.host = host;
   }
 
+  setDependenciesFromJson(dependencies: Record<string, string>) {
+    Object.keys(dependencies).forEach((key) => {
+      this.fsMap.set("/node_modules/" + key, dependencies[key]);
+    });
+  }
+
   async setDependencies(
     dependencies: Record<string, string>,
     options = { cache: true }
