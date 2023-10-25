@@ -3,8 +3,7 @@ import { render } from "react-dom";
 import clsx from "clsx";
 import { TypeTester } from "./lib";
 
-const defaultCode = `import React from "react";
-import { createRoot } from "react-dom/client";
+const defaultCode = `
 import { foo } from "./sub";
 import type { Speed } from "./sub";
 
@@ -37,10 +36,6 @@ type Fuga = string;
 const hoge: Hoge = "hoge";
 const fuga: Fuga = "fuga";
 
-function Hoge ({ onChange } : { onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
-  return <input onChange={onChange} />
-}
-
 `;
 
 const defaultSub = `
@@ -53,11 +48,6 @@ export const foo: Foo = "foo";
 
 const load = async (code: string, files: Record<string, string>) => {
   const typeTest = new TypeTester({ code, files });
-
-  await typeTest.setDependencies({
-    "react-dom": "18.2.0",
-    react: "18.2.0",
-  });
 
   typeTest.test("speed type should be valid", async () => {
     typeTest.expect("speeds").toBeType(`("slow" | "medium" | "fast")[]`);
@@ -123,13 +113,6 @@ const load = async (code: string, files: Record<string, string>) => {
     typeTest.expect("foo").not.toBeType("string");
   });
 
-  typeTest.test("Hoge is valid Component", async () => {
-    typeTest
-      .expect("Hoge")
-      .toBeType(
-        "({ onChange }: { onChange: React.ChangeEventHandler<HTMLInputElement>; }) => JSX.Element"
-      );
-  });
   console.time("run");
   const result = await typeTest.run();
   console.timeEnd("run");

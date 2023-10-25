@@ -27,10 +27,12 @@ type Test = {
 
 export class TypeTester {
   private code: string;
+  private setupCodes: string[] = [];
   private files: Record<string, string>;
   private tests: Test[] = [];
   private dependencies: Record<string, string> = {};
   private expects = new Expect();
+  private beforeAllCallbacks: (() => Promise<void>)[] = [];
   private beforeEachCallbacks: (() => Promise<void>)[] = [];
   private afterEachCallbacks: (() => Promise<void>)[] = [];
   private compilerOptions: CompilerOptions = {};
@@ -144,8 +146,9 @@ export class TypeTester {
   }
 
   expect(variable: string) {
+    const setupCodes = this.setupCodes.join("\n");
     return this.expects.expect({
-      code: this.code,
+      code: this.code + "\n" + setupCodes,
       program: this.program,
       host: this.host,
       expected: variable,
@@ -156,13 +159,19 @@ export class TypeTester {
     this.tests = [];
   }
 
+  beforeAll(callback: () => Promise<void>) {
+    this.beforeAllCallbacks.push(callback);
+  }
+
   evaluate(code: string) {
     const func = new Function(
       "test",
       "it",
       "expect",
+      "beforeAll",
       "beforeEach",
       "afterEach",
+      "addSetupCode",
       "spyOn",
       code
     );
@@ -170,15 +179,24 @@ export class TypeTester {
       this.test.bind(this),
       this.it.bind(this),
       this.expect.bind(this),
+      this.beforeAll.bind(this),
       this.beforeEach.bind(this),
       this.afterEach.bind(this),
+      this.addSetupCode.bind(this),
       this.spyOn
     );
+  }
+
+  addSetupCode(code: string) {
+    this.setupCodes.push(code);
   }
 
   async run() {
     await this.prepare();
     const results = [] as Result[];
+    for (const b of this.beforeAllCallbacks) {
+      await b();
+    }
     for (const t of this.tests) {
       for (const b of this.beforeEachCallbacks) {
         await b();
