@@ -210,10 +210,11 @@ export class TypeTester {
           messages: this.expects.getMessages(),
         });
       } catch (e) {
+        console.error(e);
         results.push({
           description,
           result: false,
-          messages: [`${e}`],
+          messages: [],
         });
       }
       this.expects.clean();
