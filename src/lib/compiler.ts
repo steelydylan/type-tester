@@ -59,6 +59,7 @@ export const hasTypeError = ({
         const message = ts.flattenDiagnosticMessageText(e.messageText, "\n");
         return message;
       }
+      return "";
     })
     .filter((e) => !!e) as string[];
 
