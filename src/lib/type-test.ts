@@ -9,7 +9,7 @@ import { getProgram } from "./compiler";
 import { Host } from "./type";
 
 type Option = {
-  code: string;
+  code?: string;
   files?: Record<string, string>;
   compilerOptions?: CompilerOptions;
 };

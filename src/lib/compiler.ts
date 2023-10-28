@@ -50,9 +50,17 @@ export const hasTypeError = ({
     host: host.compilerHost,
   });
   const diagnostics = newProgram.emit().diagnostics.filter((e) => !!e.file);
+  const filteredMessages = diagnostics
+    .map((e) => {
+      const { line } = ts.getLineAndCharacterOfPosition(e.file!, e.start!);
+      const lineText = e.file?.text.split("\n")[line].trim() ?? "";
 
-  return [
-    diagnostics.length === 0,
-    diagnostics.map((e) => e.messageText.toString()),
-  ] as const;
+      if (lineText.includes("expectType<")) {
+        const message = ts.flattenDiagnosticMessageText(e.messageText, "\n");
+        return message;
+      }
+    })
+    .filter((e) => !!e) as string[];
+
+  return [filteredMessages.length === 0, filteredMessages] as const;
 };
