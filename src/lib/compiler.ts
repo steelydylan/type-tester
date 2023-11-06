@@ -52,12 +52,9 @@ export const hasTypeError = ({
   const diagnostics = newProgram.emit().diagnostics.filter((e) => !!e.file);
   const filteredMessages = diagnostics
     .map((e) => {
-      const expectTypePos = code.indexOf("expectType");
-      if (e.start! >= expectTypePos) {
-        const message = ts.flattenDiagnosticMessageText(e.messageText, "\n");
-        return message;
-      }
-      return "";
+      // const expectTypePos = code.indexOf("expectType");
+      const message = ts.flattenDiagnosticMessageText(e.messageText, "\n");
+      return message;
     })
     .filter((e) => !!e) as string[];
 
