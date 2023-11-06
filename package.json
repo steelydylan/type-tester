@@ -2,7 +2,7 @@
   "name": "browser-type-tester",
   "main": "./dist/type-test.js",
   "types": "./dist/type-test.d.ts",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "scripts": {
     "dev": "vite",
     "preview": "vite preview",

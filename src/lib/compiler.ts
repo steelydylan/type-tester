@@ -52,10 +52,8 @@ export const hasTypeError = ({
   const diagnostics = newProgram.emit().diagnostics.filter((e) => !!e.file);
   const filteredMessages = diagnostics
     .map((e) => {
-      const { line } = ts.getLineAndCharacterOfPosition(e.file!, e.start!);
-      const lineText = e.file?.text.split("\n")[line].trim() ?? "";
-
-      if (lineText.includes("expectType<")) {
+      const expectTypePos = code.indexOf("expectType");
+      if (e.start! >= expectTypePos) {
         const message = ts.flattenDiagnosticMessageText(e.messageText, "\n");
         return message;
       }
