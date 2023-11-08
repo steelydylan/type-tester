@@ -52,7 +52,11 @@ export const hasTypeError = ({
   const diagnostics = newProgram.emit().diagnostics.filter((e) => !!e.file);
   const filteredMessages = diagnostics
     .map((e) => {
-      // const expectTypePos = code.indexOf("expectType");
+      if (e.file?.fileName !== "/test.tsx") return;
+      const { line } = ts.getLineAndCharacterOfPosition(e.file, e.start!);
+      const lines = e.file.text.split("\n");
+      const expectTypeLine = lines.findIndex((e) => e.includes("expectType<"));
+      if (line < expectTypeLine) return;
       const message = ts.flattenDiagnosticMessageText(e.messageText, "\n");
       return message;
     })
